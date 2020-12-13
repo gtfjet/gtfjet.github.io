@@ -10,12 +10,13 @@
     <h2 id="countDown">Click start/stop button to begin!</h2>
     <button onclick="toggle()">start/stop</button>
     <h3 style="color:Red" id="penalty"></h3>
-    <input type="button" value="Play" onclick="document.getElementById('ding').play()">
+    <!-- <input type="button" value="Play" onclick="document.getElementById('ding').load()"> -->
     <script>
       var time = -1;
       var timePaused = 0;
       var paused = true;
       function toggle() {
+        document.getElementById('ding').load();
         paused = !paused;
       }
       var x = setInterval(function() {
