@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PowerHour v1</title>
+  </head>
+  <body>
+    <audio id="ding" src="C:\Windows\Media\tada.wav"></audio>
+    <h1 id="log">0 shots taken so far.</h1>
+    <h2 id="countDown">Click start/stop button to begin!</h2>
+    <button onclick="toggle()">start/stop</button>
+    <h3 style="color:Red" id="penalty"></h3>
+    <script>
+      var time = -1;
+      var timePaused = 0;
+      var paused = true;
+      function toggle() {
+        paused = !paused;
+      }
+      var x = setInterval(function() {
+        if (paused) {
+          if (time<0) { return; }
+          timePaused++;
+          document.getElementById("penalty").innerHTML = "<i>Penalty of " + timePaused + " seconds.</i>";
+        } else {
+          time++;
+        }
+        if (time%60 == 0) {
+          document.getElementById("ding").play();
+        }
+        document.getElementById("log").innerHTML = Math.ceil(time/60) + " shots taken so far."
+        document.getElementById("countDown").innerHTML = "Next shot in " + (60 - time%60) + " seconds.";
+        if (time == 3600) {
+          clearInterval(x);
+          document.getElementById("countDown").innerHTML = "COMPLETE";
+        }
+      }, 1000);
+    </script>
+  </body>
+</html>
+
