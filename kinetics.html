@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Kinetics</title>
+</head>
+
+<body>
+<svg id="diagram" width=500 height=500>
+  <rect id="box"  width=500 height=500 fill="white" stroke="black" />
+</svg>
+
+<script>
+  class Base {
+    constructor() {
+      this.diagram = document.getElementById("diagram");
+      this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      this.svg.setAttribute('stroke','black'); 
+      this.diagram.appendChild(this.svg);
+    }
+  }
+  
+  class Atom extends Base {
+    constructor(x,y,color) {
+      super();
+      this.m=1;
+      this.r=10;
+      this.k=10000;
+      this.x=x;  
+      this.y=y;
+      this.u=(Math.random()-0.5)*1000;
+      this.v=(Math.random()-0.5)*1000;
+      this.svg.setAttribute('fill',color);
+    }
+    render() {
+      this.svg.setAttribute('cx',this.x);
+      this.svg.setAttribute('cy',this.y);
+      this.svg.setAttribute('r',this.r);
+    }
+  }
+  var t=0;
+  var dt=0.001; 
+  var L=500;
+  var a,d;
+  var atom;
+  var atoms=[];  
+  var color;
+  for (var i=1; i<10; i++) {
+    for (var j=1; j<10; j++) {
+      if (j>5) {
+        color = 'red';
+      } else {
+        color = 'blue';
+      }
+      var atom = new Atom(i*25,j*25,color);
+      atom.render();
+      atoms.push(atom);
+    }
+  }
+  var x = setInterval(function() {
+    for (atom of atoms) {
+      atom.f = 0;
+      atom.g = 0;
+      for (a of atoms) {
+        d = Math.sqrt((atom.x-a.x)**2 + (atom.y-a.y)**2);
+        if (d<(atom.r + a.r) && d>0) { //collision
+          atom.f += atom.k*(atom.x-a.x)/d;
+          atom.g += atom.k*(atom.y-a.y)/d;
+        }
+      }
+      if (atom.x<atom.r) atom.f += atom.k*(atom.r-atom.x);
+      if (atom.y<atom.r) atom.g += atom.k*(atom.r-atom.y);      
+      if (atom.x>L-atom.r) atom.f += atom.k*(L-atom.r-atom.x);
+      if (atom.y>L-atom.r) atom.g += atom.k*(L-atom.r-atom.y);
+      atom.f /= atom.m;
+      atom.g /= atom.m;
+      atom.u = atom.u + atom.f*dt;
+      atom.v = atom.v + atom.g*dt;
+      atom.x = atom.x + atom.u*dt;
+      atom.y = atom.y + atom.v*dt;
+      atom.render();
+    }
+    t+=dt;
+  }, 1);
+  
+</script>
+</body>
+</html>
+
+
+
