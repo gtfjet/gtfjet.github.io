@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>
+Animator
+</title>
+<style>
+body {
+  background: #333;
+}
+</style>
+</head>
+<body>
+<script>
+let dt = 0.01;
+let svgNS = "http://www.w3.org/2000/svg";
+let diagram = document.createElementNS(svgNS, 'svg');
+diagram.setAttribute('width', 1000);
+diagram.setAttribute('height', 1000);
+document.body.appendChild(diagram);
+let sequence = [];
+class Element {
+  constructor() {
+    sequence.push(this);
+  }
+  animate() { }
+  calculate() { }
+}
+function run() {
+  for(const seq of sequence) {
+    seq.calculate();
+    seq.animate();
+  }
+}
+
+class Flange {
+  constructor() {
+    this.x  = 0;
+    this.y  = 0;
+    this.fx = 0;
+    this.fy = 0;
+  }
+}
+
+class Mount extends Element {
+  constructor() {
+    super();
+    this.flange = new Flange();
+    this.svg = document.createElementNS(svgNS, 'rect');
+    this.svg.setAttribute('fill', '#F33');
+    this.svg.setAttribute('width', 20);
+    this.svg.setAttribute('height', 20);
+    diagram.appendChild(this.svg);
+  }
+  animate() {
+    this.svg.setAttribute('x',this.flange.x-10);
+    this.svg.setAttribute('y',this.flange.y-10);
+  }
+}
+
+class Mass extends Element {
+  constructor(nFlange) {
+    super();
+    this.flange = [];
+    for(let i=0; i<nFlange; i++) {
+      this.flange.push(new Flange());
+    }
+    this.m  = 1;
+    this.r  = 10;
+    this.x  = 0;
+    this.y  = 0;
+    this.vx = 0;
+    this.vy = 0;
+    this.svg = document.createElementNS(svgNS, 'circle');
+    this.svg.setAttribute('fill', '#7AF');
+    diagram.appendChild(this.svg);
+  }
+  animate() {
+    this.svg.setAttribute('r',this.r);
+    this.svg.setAttribute('cx',this.x);
+    this.svg.setAttribute('cy',this.y);
+  }
+  calculate() {
+    let g = 0;
+    let fnetx = 0;
+    let fnety = 0;
+    for(let i=0; i<this.flange.length; i++) { 
+      fnetx += this.flange[i].fx; 
+      fnety += this.flange[i].fy; 
+    }
+    this.vx +=  fnetx / this.m      * dt;
+    this.vy += (fnety / this.m + g) * dt;
+    this.x  += this.vx * dt;
+    this.y  += this.vy * dt;
+    for(let i=0; i<this.flange.length; i++) { 
+      this.flange[i].x = this.x;
+      this.flange[i].y = this.y;
+    }
+  }
+}
+
+class Spring extends Element {
+  flange_a; flange_b;
+  constructor() {
+    super();
+    this.k = 1;
+    this.svg = document.createElementNS(svgNS, 'line');
+    this.svg.setAttribute('stroke', '#FFF');
+    diagram.appendChild(this.svg);
+  }
+  animate() {
+    this.svg.setAttribute('x1',this.flange_a.x);
+    this.svg.setAttribute('y1',this.flange_a.y);
+    this.svg.setAttribute('x2',this.flange_b.x);
+    this.svg.setAttribute('y2',this.flange_b.y);
+  }
+  calculate() {
+    var dx = this.flange_a.x - this.flange_b.x;
+    var dy = this.flange_a.y - this.flange_b.y;
+    this.flange_a.fx = -this.k*dx;
+    this.flange_a.fy = -this.k*dy;
+    this.flange_b.fx =  this.k*dx;
+    this.flange_b.fy =  this.k*dy;
+  }
+}
+
+let spring1 = new Spring();
+let spring2 = new Spring();
+let spring3 = new Spring();
+let spring4 = new Spring();
+let spring5 = new Spring();
+let spring6 = new Spring();
+
+let mass1 = new Mass(2);
+mass1.x  = 100;
+mass1.y  = 100;
+mass1.vy = -100;
+
+let mass2 = new Mass(2);
+mass2.x  = 200;
+mass2.y  = 100;
+
+let mass3 = new Mass(2);
+mass3.x  = 300;
+mass3.y  = 100;
+
+let mass4 = new Mass(2);
+mass4.x  = 400;
+mass4.y  = 100;
+
+let mass5 = new Mass(2);
+mass5.x  = 500;
+mass5.y  = 100;
+
+let mount1 = new Mount();
+mount1.flange.x = 75;
+mount1.flange.y = 100;
+
+let mount2 = new Mount();
+mount2.flange.x = 600;
+mount2.flange.y = 100;
+
+spring1.flange_a = mount1.flange;
+spring1.flange_b = mass1.flange[0];
+spring2.flange_a = mass1.flange[1];
+spring2.flange_b = mass2.flange[0];
+spring3.flange_a = mass2.flange[1];
+spring3.flange_b = mass3.flange[0];
+spring4.flange_a = mass3.flange[1];
+spring4.flange_b = mass4.flange[0];
+spring5.flange_a = mass4.flange[1];
+spring5.flange_b = mass5.flange[0];
+spring6.flange_a = mass5.flange[1];
+spring6.flange_b = mount2.flange;
+
+setInterval(run,dt*1000);
+
+</script>
+</body>
+</html>
