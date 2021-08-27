@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body {
+  background-color: #222;
+}
+</style>
+</head>
+<body>
+<script type="text/javascript" src="vlab.min.js" ></script>
+<script type="text/javascript" src="ex6.js" ></script>
+</body>
+</html>
