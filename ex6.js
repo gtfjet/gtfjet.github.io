@@ -9,7 +9,7 @@ var solver = new Solver();
 let mass1 = new Mass(2);
 mass1.x  = 100;
 mass1.y  = 200;
-// mass1.vy = -300;
+mass1.vy = -300;
 
 let mass2 = new Mass(2);
 mass2.x  = 200;
