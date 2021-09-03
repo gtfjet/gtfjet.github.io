@@ -1,10 +1,3 @@
-let svgNS = "http://www.w3.org/2000/svg";
-let diagram = document.createElementNS(svgNS, 'svg');
-diagram.setAttribute('width', 1000);
-diagram.setAttribute('height', 1000);
-document.body.appendChild(diagram);
-var solver = new Solver();
-
 let mass1 = new Mass(2);
 mass1.x  = 100;
 mass1.y  = 100;
@@ -55,9 +48,9 @@ spring6.flange_a = mass5.flange[1];
 spring6.flange_b = mount2.flange;
 
 function run() {
-  solver.maxIterations=1;
-  solver.run();
+  if(!paused) {
+    solver.run();
+  }
 }
-// run();
+solver.maxIterations=1;
 setInterval(run,solver.timeStep*1000);
-
